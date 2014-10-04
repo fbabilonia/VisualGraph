@@ -1,22 +1,30 @@
-package nyc.babilonia.VisualGraph;
+package outDated;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
+import java.util.TreeSet;
 
+import nyc.babilonia.VisualGraph.Edge;
+//old point class used while in class before the breakdown
 public class vPoint extends Point implements Comparable<vPoint>
 {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 5135901192710948886L;
 	public int id;
 	private Stroke pointStroke= new BasicStroke(15,BasicStroke.CAP_ROUND,BasicStroke.JOIN_MITER);
 	private static Color pointColor = Color.RED;
+	public TreeSet<Edge> edges = new TreeSet<Edge>();
 	public vPoint(int x ,int y , int id)
 	{
 		this.x=x;
 		this.y=y;
 		this.id=id;
+	}
+	public void addEdge(Edge e)
+	{
+		edges.add(e);
 	}
 	public static void setColor(Color newColor)
 	{
@@ -46,7 +54,7 @@ public class vPoint extends Point implements Comparable<vPoint>
 	}
 	@Override
 	public String toString()
-	{return id + " " + x + " " + y;}
+	{return (id+1) + " " + x + " " + y;}
 	//
 	@Override
 	public int compareTo(vPoint otherPoint)

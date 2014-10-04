@@ -1,13 +1,12 @@
 package nyc.babilonia.VisualGraph;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,265 +16,161 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class Graph
+public abstract class Graph
 {
-	private Set<vPoint> pointSet = new HashSet<vPoint>();
-	private Set<Edge> edges = new TreeSet<Edge>();
-	private ArrayList<vPoint> points = new ArrayList<vPoint>();
-	private Map<Integer, vPoint> pointMap = new HashMap<Integer, vPoint>();
-
-	public ArrayList<vPoint> getPoints()
+	Set<Point> pointSet = new HashSet<Point>();//used to keep only 1 of each point
+	Set<Edge>  edges = new TreeSet<Edge>();//used to keep set of edges and also pre-sort for computations.
+	ArrayList<Point> points = new ArrayList<Point> ();//used for easy access to points.
+	
+	public Graph()
+	{
+		//creates empty graph;
+	}
+	//just creates a graph from a pre-saved file.
+	public Graph(File graphFile) throws IOException
+	{
+		openGraphFromFile(graphFile);
+	}
+	public void openGraphFromFile(File graphFile) throws IOException
+	{
+		try
+		{
+		clear();
+			Scanner scanner = new Scanner(graphFile);
+			int numOfPoints = scanner.nextInt();
+			int first , second , weight;
+			for(int pointNum = 0 ; pointNum < numOfPoints ; pointNum++)
+			{
+				first = scanner.nextInt();
+				second = scanner.nextInt();
+				addPoint(new Point(pointNum,first,second));
+			}
+			while(scanner.hasNextInt())
+			{
+				first = scanner.nextInt();
+				second = scanner.nextInt();
+				weight = scanner.nextInt();
+				addEdge(new Edge(points.get(first-1),points.get(second-1),weight)); 
+			}
+			scanner.close();
+		}
+		catch(Exception e)
+		{
+			throw new IOException("Invalid file format encountered.");
+		}
+	}
+	public ArrayList<Point> getPoints()
 	{
 		return points;
 	}
-
 	public Set<Edge> getEdges()
 	{
 		return edges;
 	}
-
-	public Graph()
+	public void saveGraph(File outFile) throws IOException
 	{
+		PrintWriter pw = new PrintWriter(new FileWriter(outFile));
+		pw.println(points.size());
+		for (Point p : points)
+			pw.println(p.x  + " " + p.y);
+		for (Edge e : edges)
+			pw.println(e.point1.id + " " + e.point2.id + " " + e.getWeight());
+		pw.flush();
+		pw.close();
 	}
-
-	public Graph(File input)
+	public boolean addPoint(Point point)
 	{
-		capture(input);
-	}// end constructor with file
-
-	public void capture(File input)
-	{
-		try
+		if(pointSet.add(point))
 		{
-			Scanner scanner = new Scanner(new FileReader(input));
-			vPoint p;
-			int w, p1, p2, n = scanner.nextInt();
-			for (int i = 0; i < n; ++i)
-			{
-				w = scanner.nextInt();
-				p = new vPoint(scanner.nextInt(), scanner.nextInt(), w);
-				// System.out.println(p);
-				if (pointSet.add(p))
-				{
-					points.add(p);
-					pointMap.put(p.id, p);
-				}
-			}
-			while (scanner.hasNextInt())
-			{
-				p1 = scanner.nextInt();
-				p2 = scanner.nextInt();
-				w = scanner.nextInt();
-				edges.add(new Edge(pointMap.get(new Integer(p1)), pointMap
-						.get(new Integer(p2)), w));
-			}
-			scanner.close();
-		} catch (FileNotFoundException e)
-		{/* don't do anything for now */
+			points.add(point);
+			return true;
 		}
-		// for(Edge e :edges)System.out.println(e.weight);
+		return false;
 	}
-
+	//adds edge to graph while keeping internals correct.
+	protected abstract boolean _addEdge(Edge edge);
+	//public method to add an Edge shared by all graphs.
+	public boolean addEdge(Edge edge)
+	{
+		return _addEdge(edge);
+	}
+	//clears internal data structures of graph
 	public void clear()
 	{
-		points.clear();
-		edges.clear();
 		pointSet.clear();
-		pointMap.clear();
+		edges.clear();
+		points.clear();
 	}
-
-	public Edge getEdge(vPoint p1, vPoint p2)
+	public void updateEdge(Edge e, int update)
 	{
-		Set<Edge> es = this.edgesForPoint(edges, p1);
-		for (Edge e : es)
-		{
-			if (p1.equals(e.p1) && p2.equals(e.p2))
-				return e;
-		}
-		return null;
+		e.updateWeight(update);
 	}
-
-	public Graph createMSP()
+	public Map<String, Path> Dijkstras(int source, ArrayList<TreeNode> history)
 	{
-		Graph MSP = new Graph();
-		ArrayList<vPoint> p = new ArrayList<vPoint>();
-		Set<vPoint> ps = new HashSet<vPoint>();
-		Set<Edge> es = new TreeSet<Edge>();
-		System.out.println(edges.size());
-		for (Edge e : edges)
-		{
-			// System.out.println(e.weight);
-			if (ps.add(e.p1))
-				p.add(e.p1);
-			if (ps.add(e.p2))
-				p.add(e.p2);
-			es.add(e);
-			// if(es.size()>2&&hasCycle(es,p)){es.remove(e);System.out.println(e);}
-			if (ps.size() == points.size() && es.size() == ps.size() - 1)
-				break;
-		}
-		MSP.edges = es;
-		Collections.copy(p, points);
-		MSP.points = p;
-		MSP.pointSet = ps;
-		// System.out.println(hasCycle(edges,points));
-		return MSP;
-
-	}
-
-	public void saveGraph(File out)
-	{
-		try
-		{
-			PrintWriter pw = new PrintWriter(new FileWriter(out));
-			pw.println(points.size());
-			for (vPoint p : points)
-				pw.println(p);
-			for (Edge e : edges)
-				pw.println(e.p1.id + " " + e.p2.id + " " + e.weight);
-			pw.flush();
-			pw.close();
-		} catch (IOException e)
-		{/* dont do anything */
-		}
-	}
-
-	public Map<String, Path> getSPath(vPoint point, ArrayList<TreeNode> history)
-	{
-		Map<String, Path> paths = new HashMap<String, Path>();
-		Map<Integer, TreeNode> best = new HashMap<Integer, TreeNode>();
-		int[] distances = new int[points.size() + 1];
-		Set<vPoint> visited = new HashSet<vPoint>(), open = new TreeSet<vPoint>();
-		TreeSet<TreeNode> candidates = new TreeSet<TreeNode>();
-		visited.add(point);
-		for (vPoint m : pointSet)
-		{
-			if (m.id != point.id)
-			{
-				distances[m.id] = -1;
-				open.add(m);
-			}
-
-		}
-		TreeNode current = new TreeNode(0, distances, edgesForPoint(edges,
-				point), null, visited, open, true, best, this, candidates, null);
-		TreeNode head = current;
-		current.point = point;
-		ArrayList<TreeNode> toRemove = new ArrayList<TreeNode>();
-		if (history != null)
-			history.add(new TreeNode(head));
+		Map<String,Path> paths = new HashMap<String,Path>();
+		DijkstraData data = new DijkstraData(points.get(source),points);
+		TreeNode head = new TreeNode(data) , current;
+		current = head;
+		int itt = 1; 
+		Point currentPoint;
 		do
 		{
-			if (current.isValid)
+			if(current.isValid)
 			{
-				visited.add(current.point);
-				open.remove(current.point);
-				current.activate();
-				for (TreeNode child : current.children)
+				currentPoint = current.point;
+				if(history != null)
+					history.add(new TreeNode(current));
+				data.closed.add(currentPoint);
+				for(Edge edge : current.point.edges)
 				{
-					if (child.isValid)
+					Point otherPoint = edge.point2; //point2 is always where the edge is going to;
+					int newDistance = current.distanceFromSource + edge.getWeight();
+					boolean isChildValid =(data.distances[otherPoint.id] == -1 
+							|| (newDistance)< data.distances[otherPoint.id]);
+					TreeNode child = new TreeNode(current, otherPoint , isChildValid , edge , edge.getWeight());
+					current.children.add(child);
+					if(child.isValid)
 					{
-						if (!visited.contains(child.point))
-							candidates.add(child);
-					}
-				}// end add children to candidates
-				for (vPoint pt : visited)
-				{
-					System.out.print(pt.id + " ");
-				}
-				System.out.println();
-				for (TreeNode candidate : candidates)
-				{
-					System.out.print(candidate.point.id + " ");
-					if (visited.contains(candidate.point))
-					{
-						toRemove.add(candidate);
+						current.candidates.add(child);
+						current.best.put(otherPoint.id, child);
+						data.distances[child.point.id] = child.distanceFromSource;
 					}
 				}
-				System.out.println();
-
-				if (history != null)
-					history.add(new TreeNode(head));
-				System.out.println(toRemove.size());
-				for (TreeNode rem : toRemove)
-				{
-					candidates.remove(rem);
-				}
-				toRemove.clear();
 			}
-			// System.out.println(candidates);
-			current = candidates.pollFirst();
-			// head.update();
-		} while (open.size() > 0 && current != null);
-		Iterator<Entry<Integer, TreeNode>> it = best.entrySet().iterator();
+			System.out.println("Itteration # " +itt);
+			for(TreeNode candidate : current.candidates)
+			{
+				System.out.println(candidate.point.id + " " + candidate.distanceFromSource);
+			}
+			System.out.println();
+			itt++;
+			current = current.candidates.pollFirst();
+		}
+		while(data.open.size()>0 && current != null);
+		Iterator<Entry<Integer, TreeNode>> it = head.best.entrySet().iterator();
 		while (it.hasNext())
 		{
 			Map.Entry<Integer, TreeNode> pairs = (Entry<Integer, TreeNode>) it
 					.next();
-			Path p = pairs.getValue().getPath(point);
+			Path p = pairs.getValue().getPath(points.get(source));
+			System.out.println(p);
 			paths.put(p.toString(), p);
 		}
 		return paths;
 	}
-
-	public boolean hasCycle(Set<Edge> edg, ArrayList<vPoint> point)
-	{
-		boolean[] visited = new boolean[point.size()];
-		vPoint p = point.get(0);
-		Set<Edge> es = new TreeSet<Edge>();
-		ArrayList<Edge> edges = new ArrayList<Edge>();
-		do
-		{
-			// System.out.println("EDGES size ="+edg.size());
-			Set<Edge> tempset = edgesForPoint(edg, p);
-			for (Edge e : tempset)
-			{
-				if (es.add(e))
-					edges.add(e);
-			}
-			visited[point.indexOf(p)] = true;
-			Edge e = edges.get(0);
-			edges.remove(e);
-			if (e.p1.equals(p))
-				p = e.p2;
-			else
-				p = e.p1;
-			if (visited[point.indexOf(p)])
-				return true;
-		} while (edges.size() > 0);
-		return false;
-	}// end has cycle
-
-	public Set<Edge> edgesForPoint(Set<Edge> ed, vPoint p)
+	public abstract void draw(Graphics2D g2d);
+	public abstract void draw(Graphics2D g2d , Color pointColor , Color lineColor);
+	//will drop
+	public void saveState(ArrayList<ArrayList<Set<Point>>> pstates, ArrayList<Set<Point>> psets)
+	{}
+	public Set<Edge> edgesForPoint(Set<Edge> ed, Point p)
 	{
 		Set<Edge> edgeForPoint = new TreeSet<Edge>();
 		for (Edge e : ed)
 		{
-			if (e.p1.equals(p))
+			if (e.point1.equals(p))
 				edgeForPoint.add(e);
 		}
 		return edgeForPoint;
 	}// end get edgesforPoint
-
-	public void addPoint(vPoint p)
-	{
-		if (pointSet.add(p))
-			points.add(p);
-	}
-
-	public void addEdge(Edge e)
-	{
-		edges.add(e);
-	}
-
-	public void updateEdge(Edge e, int update)
-	{
-		e.weight = update;
-	}
-
-	public void makeGraph(File file)
-	{
-		this.clear();
-		this.capture(file);
-	}// end makeGraph
 }

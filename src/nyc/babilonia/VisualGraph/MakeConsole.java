@@ -62,7 +62,7 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 		edges.clear();
 		for(Edge e : edgeList)
 		{
-			edges.add("From:p"+(e.p1.id+1)+" To:p" +(e.p2.id+1)+" Weight:"+e.weight);
+			edges.add("From:p"+(e.point1.id+1)+" To:p" +(e.point2.id+1)+" Weight:"+e.getWeight());
 		}
 		edgesList.updateUI();
 		repaint();
@@ -269,8 +269,8 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 				int weight = Integer.parseInt(weightField.getText());
 				if(p1Box.getSelectedIndex()!=-1 && p2Box.getSelectedIndex()!= -1 &&p1Box.getSelectedIndex()!=p2Box.getSelectedIndex())
 				{
-					ArrayList<vPoint> ep = graph.getPoints();
-					vPoint p1=ep.get(p1Box.getSelectedIndex()), p2 = ep.get(p2Box.getSelectedIndex());
+					ArrayList<Point> ep = graph.getPoints();
+					Point p1=ep.get(p1Box.getSelectedIndex()), p2 = ep.get(p2Box.getSelectedIndex());
 					Edge newe =new Edge(p1, p2, weight);
 					if(edgeSet.add(newe))
 					{
@@ -298,10 +298,11 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 			surface.setSelected(null);
 			ArrayList<TreeNode> history = null;
 			if(visualizeCheck.getState())history = new ArrayList<TreeNode>();
-			pathMap=graph.getSPath(graph.getPoints().get(pathBox.getSelectedIndex()),history);
+			pathMap=graph.Dijkstras(pathBox.getSelectedIndex(),history);
 			paths.clear();
 			for(Path p :pathMap.values())
 			{
+				System.out.println(p);
 				paths.add(p.toString());
 			}
 			pathList.updateUI();

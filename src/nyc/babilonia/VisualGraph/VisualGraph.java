@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFileChooser;
@@ -19,7 +20,7 @@ import javax.swing.event.MenuListener;
 @SuppressWarnings("serial")
 public class VisualGraph extends JFrame
 {
-	private Graph graph = new Graph();
+	private Graph graph = new UndirectedGraph();
 	private JMenuBar menu;
 	private JMenu fileMenu;
 	private JMenuItem fileNew, fileOpen, fileSave, fileClose;
@@ -130,7 +131,13 @@ public class VisualGraph extends JFrame
 			console.clearAll();
 			dir = choose.getSelectedFile();
 			graph.clear();
-			graph.capture(dir);
+			try
+			{
+				graph.openGraphFromFile(dir);
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 			surface.setGraph(graph);
 			console.setOpenFileField(dir);
 			console.edgeList.addAll(graph.getEdges());
@@ -158,7 +165,13 @@ public class VisualGraph extends JFrame
 		if(choose.showSaveDialog(this)==JFileChooser.APPROVE_OPTION)
 		{
 			dir = choose.getSelectedFile();
-			graph.saveGraph(dir);
+			try
+			{
+				graph.saveGraph(dir);
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 			confirmChangesMade();
 			console.setOpenFileField(dir);
 		}
