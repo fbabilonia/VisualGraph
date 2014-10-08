@@ -1,9 +1,11 @@
-package nyc.babilonia.VisualGraph;
+package nyc.babilonia.VisualGraph.data;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.TreeSet;
+
+
 
 public class Point extends GraphComponent implements Comparable<Point>
 {
@@ -24,12 +26,14 @@ public class Point extends GraphComponent implements Comparable<Point>
 		edges.add(e);
 	}
 	@Override
-	public void draw(Graphics2D g2d , Color color)
+	protected void _draw(Graphics2D g2d , Color drawColor)
 	{
-		g2d.setColor(color);
+		Color old = g2d.getColor();
+		g2d.setColor(drawColor);
 		g2d.drawLine(x, y, x, y);
 		g2d.setColor(fontColor);
 		g2d.drawString("p" + (id+1), x-6, y+6);
+		g2d.setColor(old);
 	}
 	@Override
 	public String toString()

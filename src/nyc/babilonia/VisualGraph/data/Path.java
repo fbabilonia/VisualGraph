@@ -1,8 +1,10 @@
-package nyc.babilonia.VisualGraph;
+package nyc.babilonia.VisualGraph.data;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+
+
 
 
 public class Path extends GraphComponent
@@ -21,9 +23,9 @@ public class Path extends GraphComponent
 	}
 	@Override
 	public String toString()
-	{return "Path From P" +from.id+ " to P"+to.id+" with a cost of "+this.cost+".";}
+	{return "Path From P" + (from.id + 1) + " to P" + (to.id + 1) +" with a cost of " + this.cost + ".";}
 	@Override
-	public void draw(Graphics2D g2d, Color color)
+	public void _draw(Graphics2D g2d, Color color)
 	{
 		for(Edge e : path.edges)
 		{

@@ -7,10 +7,11 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import nyc.babilonia.VisualGraph.Edge;
-import nyc.babilonia.VisualGraph.Graph;
-import nyc.babilonia.VisualGraph.Path;
-import nyc.babilonia.VisualGraph.Point;
+
+import nyc.babilonia.VisualGraph.data.Edge;
+import nyc.babilonia.VisualGraph.data.Graph;
+import nyc.babilonia.VisualGraph.data.Path;
+import nyc.babilonia.VisualGraph.data.Point;
 
 public class TreeNodeold implements Comparable<TreeNodeold>
 {

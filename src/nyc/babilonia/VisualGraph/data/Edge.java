@@ -1,13 +1,15 @@
-package nyc.babilonia.VisualGraph;
+package nyc.babilonia.VisualGraph.data;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
+
+
 public class Edge extends GraphComponent implements Comparable<Edge>
 {
-	public Point point1, point2, drawPoint1, drawPoint2;
+	public Point point1, point2, drawPoint1, drawPoint2 , textPoint;
 	private int weight;
 	
 	public Edge(Point a, Point b, int w)
@@ -17,7 +19,8 @@ public class Edge extends GraphComponent implements Comparable<Edge>
 		weight=w;
 		color = Color.BLUE;
 		stroke = new BasicStroke(2);
-		initDrawPoints();
+		calculateDrawPoints();
+		calculateTextPoint();
 	}
 	public void drawWithArrow(Graphics2D g2d)
 	{
@@ -31,7 +34,7 @@ public class Edge extends GraphComponent implements Comparable<Edge>
 	{
 		weight = newWeight;
 	}
-	private void initDrawPoints()
+	public void calculateDrawPoints()
 	{
 		int width = (int)((BasicStroke) point1.getStroke()).getLineWidth()/2;
 		int x1,y1,x2,y2;
@@ -61,6 +64,12 @@ public class Edge extends GraphComponent implements Comparable<Edge>
 		drawPoint1 = new Point(0 ,x1 ,y1);
 		drawPoint2 = new Point (0 , x2 , y2);
 	}
+	private void calculateTextPoint()
+	{
+		textPoint = new Point(0,(point1.x+point2.x)/2,(point1.y+point2.y)/2);
+		textPoint.x+=6;
+		textPoint.y-=6;
+	}
 	public void drawWithArrow(Graphics2D g2d , Color drawColor)
 	{
 		draw(g2d, drawColor);
@@ -79,11 +88,13 @@ public class Edge extends GraphComponent implements Comparable<Edge>
 		g2d.setTransform(old);
 	}
 	@Override
-	public void draw(Graphics2D g2d, Color drawColor)
+	public void _draw(Graphics2D g2d, Color drawColor)
 	{
 		g2d.setStroke(stroke);
 		g2d.setColor(drawColor);
 		g2d.drawLine(drawPoint1.x , drawPoint1.y , drawPoint2.x , drawPoint2.y);
+		g2d.setColor(fontColor);
+		g2d.drawString(weight+"",textPoint.x,textPoint.y);
 	}
 	@Override
 	public String toString()

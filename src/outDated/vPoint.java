@@ -7,7 +7,9 @@ import java.awt.Point;
 import java.awt.Stroke;
 import java.util.TreeSet;
 
-import nyc.babilonia.VisualGraph.Edge;
+import nyc.babilonia.VisualGraph.data.Edge;
+
+
 //old point class used while in class before the breakdown
 public class vPoint extends Point implements Comparable<vPoint>
 {

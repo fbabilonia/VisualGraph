@@ -1,23 +1,25 @@
-package nyc.babilonia.VisualGraph;
+package nyc.babilonia.VisualGraph.data;
 
-import java.awt.RenderingHints;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
 
+
+
 //classed used to facilitate Dijkstra's history and shortest path tree
 public class TreeNode implements Comparable<TreeNode>
 {
-	DijkstraData data;
-	Point point;
-	TreeNode parent;
-	Edge edgeBetweenParent;
-	boolean isValid = true;
-	Map<Integer, TreeNode> best = new HashMap<Integer,TreeNode>();
+	public DijkstraData data;
+	public Point point;
+	public TreeNode parent;
+	public Edge edgeBetweenParent;
+	public boolean isValid = true;
+	public Map<Integer, TreeNode> best = new HashMap<Integer,TreeNode>();
 	public int distanceFromSource;
-	Vector<TreeNode> children = new Vector<TreeNode> ();
-	TreeSet<TreeNode> candidates = new TreeSet<TreeNode>();
+	public Vector<TreeNode> children = new Vector<TreeNode> ();
+	public TreeSet<TreeNode> candidates = new TreeSet<TreeNode>();
 	public int level;
 	public TreeNode (DijkstraData data)
 	{
@@ -29,6 +31,7 @@ public class TreeNode implements Comparable<TreeNode>
 	public TreeNode(TreeNode parent ,Point point, boolean valid ,Edge between , int distanceFromParent)
 	{
 		best= parent.best;
+		data = parent.data;
 		candidates = parent.candidates;
 		edgeBetweenParent = between;
 		isValid = valid;
@@ -81,9 +84,32 @@ public class TreeNode implements Comparable<TreeNode>
 		System.out.println("Edges in path ="+p.path.getEdges().size());
 		return p;
 	}
+	private void getStructureRec(ArrayList<ArrayList<TreeNode>> structure)
+	{
+		if(structure.size()<this.level+1 )structure.add(new ArrayList<TreeNode>());
+		structure.get(level).add(this);
+		for(TreeNode child : children)
+		{
+			child.getStructureRec(structure);
+		}
+	}
+	public ArrayList<ArrayList<TreeNode>> getStructure()
+	{
+		ArrayList<ArrayList<TreeNode>> structure = new ArrayList<ArrayList<TreeNode>>();
+		if(parent ==null)
+		{
+			getStructureRec(structure);
+		}
+		return structure;
+	}
 	@Override
 	public int compareTo(TreeNode other)
 	{
 		return distanceFromSource - other.distanceFromSource;
+	}
+	@Override
+	public String toString()
+	{
+		return "P"+point.id+ " with distance from source of "+this.distanceFromSource;
 	}
 }

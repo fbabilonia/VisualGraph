@@ -1,4 +1,4 @@
-package nyc.babilonia.VisualGraph;
+package nyc.babilonia.VisualGraph.data;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+
+
 
 public class UndirectedGraph extends Graph
 {
@@ -20,7 +22,6 @@ public class UndirectedGraph extends Graph
 			pset.get(pset.size() - 1).add(p);
 		}
 		Edge tmp;
-		saveState(pstates, pset);
 		estates.add(new TreeSet<Edge>(MST));
 		int a = 0, b = 0, total = 0;
 		while (pset.size() > 1)
@@ -53,12 +54,11 @@ public class UndirectedGraph extends Graph
 				gobble.add(new Point(a, b, 0));
 				MST.add(tmp);
 				estates.add(new TreeSet<Edge>(MST));
-				saveState(pstates, pset);
 			}
 		}
 		return total;
 	}
-
+	@Override
 	public int prim(Set<Point> mstPoints, Set<Edge> mstEdges,
 			ArrayList<Set<Edge>> eh, ArrayList<Set<Point>> ph)
 	{

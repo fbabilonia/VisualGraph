@@ -2,7 +2,6 @@ package nyc.babilonia.VisualGraph;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -11,20 +10,27 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
+import nyc.babilonia.VisualGraph.data.Edge;
+import nyc.babilonia.VisualGraph.data.GraphObject;
+import nyc.babilonia.VisualGraph.data.Path;
+import nyc.babilonia.VisualGraph.data.Point;
+
+
 @SuppressWarnings("serial")
 public class DrawSurface extends JPanel implements MouseListener
 {
-	public Graph graph;
+	public GraphObject graph;
 	private ChangeTracker changeTracker = ChangeTracker.getTracker();
 	private boolean drawable = false,tranformable = false;
-	private Dimension startDim = new Dimension(750,1000);
 	Edge selected = null;
 	Path path = null;
-	public DrawSurface(Graph g )
+	public DrawSurface(GraphObject g , Dimension parent)
 	{
+		Dimension startDim = new Dimension((int)(parent.width*.75) , parent.height);
 		this.setPreferredSize(startDim);
 		this.addMouseListener(this);
 		this.graph = g;
+		this.setBackground(Color.WHITE);
 	}
 	public void toggleTranform()
 	{
@@ -63,11 +69,6 @@ public class DrawSurface extends JPanel implements MouseListener
 			path.draw(g2d);
 		}
 	}//end draw
-	public void setGraph(Graph g)
-	{
-		graph = g; redraw();
-	}
-	@Override
     public void paintComponent(Graphics g) 
 	{    
         super.paintComponent(g);

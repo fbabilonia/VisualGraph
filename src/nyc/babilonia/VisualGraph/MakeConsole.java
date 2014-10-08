@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeSet;
@@ -17,7 +16,6 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -25,16 +23,23 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import nyc.babilonia.VisualGraph.data.Edge;
+import nyc.babilonia.VisualGraph.data.GraphObject;
+import nyc.babilonia.VisualGraph.data.Path;
+import nyc.babilonia.VisualGraph.data.Point;
+import nyc.babilonia.VisualGraph.data.TreeNode;
+
+
 @SuppressWarnings("serial")
 public class MakeConsole extends JPanel implements ActionListener,MouseListener
 {
 
-	private Graph graph;
+	private GraphObject graph;
 	private DrawSurface surface;
-	JButton drawableButton,makeEdgeButton,saveGraphButton,openGraphButton,pathButton,clearButton;
+	JButton drawableButton,makeEdgeButton,pathButton;
 	JList<String> edgesList,pathList;
-	JTextField weightField,openFileField;
-	JLabel edgeLabel,selectedFileLabel,pathLabel,centerLabel;
+	JTextField weightField;
+	JLabel edgeLabel,pathLabel,centerLabel;
 	Checkbox visualizeCheck;
 	private ChangeTracker changeTracker = ChangeTracker.getTracker();
 	JComboBox<String> p1Box,p2Box,pathBox;
@@ -43,10 +48,14 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 	TreeSet<Edge> edgeSet = new TreeSet <Edge>();
 	Map<String,Path> pathMap;
 	
-	public MakeConsole (Graph g, DrawSurface d)
+	public MakeConsole (GraphObject g, DrawSurface d , Dimension parent)
 	{
 		graph=g;
 		surface = d;
+		Dimension startDim = new Dimension((int)(parent.width*.25) , parent.height);
+		this.setSize(startDim);
+		this.setMaximumSize(startDim);
+		this.setAlignmentX(RIGHT_ALIGNMENT);
 		initGUI();
 	}
 	public void updatePoints()
@@ -70,9 +79,6 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 
 	public void initGUI()
 	{
-		this.setSize(300,1000);
-		this.setMaximumSize(new Dimension(350,1000));
-		this.setAlignmentX(RIGHT_ALIGNMENT);
 		this.setVisible(true);
 		this.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
@@ -80,56 +86,50 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 		//creates the section that allows creation/editing of graph
 		JPanel createSection = new JPanel();
 		createSection.setLayout(new BoxLayout(createSection,BoxLayout.Y_AXIS));
-		createSection.setBackground(new Color(240,230,140));
-		createSection.setMaximumSize(new Dimension(350,200));
+		createSection.setBackground(Color.BLACK);
+		createSection.setMaximumSize(new Dimension(this.getWidth(),700));
+		createSection.setPreferredSize(new Dimension(this.getWidth(),700));
 		
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.X_AXIS));
+		buttonPanel.setMaximumSize(new Dimension(this.getWidth(),50));
+		buttonPanel.setPreferredSize(new Dimension(this.getWidth(),50));
 		buttonPanel.setBackground(new Color(240,230,140));
 		drawableButton = new JButton("Start Drawing");
 		drawableButton.setActionCommand("draw");
 		drawableButton.setAlignmentX(LEFT_ALIGNMENT);
 		drawableButton.setAlignmentY(BOTTOM_ALIGNMENT);
+		drawableButton.setEnabled(false);
 		drawableButton.addActionListener(this);
 		buttonPanel.add(drawableButton);
 		
-		saveGraphButton = new JButton("Save Graph");
-		saveGraphButton.setActionCommand("save");
-		saveGraphButton.setAlignmentX(RIGHT_ALIGNMENT);
-		saveGraphButton.setAlignmentY(BOTTOM_ALIGNMENT);
-		saveGraphButton.addActionListener(this);
-		buttonPanel.add(saveGraphButton);
-		
-		clearButton = new JButton("Clear");
-		clearButton.setActionCommand("clear");
-		clearButton.setAlignmentX(RIGHT_ALIGNMENT);
-		clearButton.setAlignmentY(BOTTOM_ALIGNMENT);
-		clearButton.addActionListener(this);
-		buttonPanel.add(clearButton);
-		createSection.add(buttonPanel);
+		add(buttonPanel);
+	
 		
 		JPanel edgePanel = new JPanel();
 		edgePanel.setLayout(new BoxLayout(edgePanel,BoxLayout.X_AXIS));
+		edgePanel.setMaximumSize(new Dimension(this.getWidth(),50));
+		edgePanel.setPreferredSize(new Dimension(this.getWidth(),50));
 		p1Box = new JComboBox<String>(points);
-		p1Box.setMaximumSize(new Dimension(100,20));
+		p1Box.setMaximumSize(new Dimension(this.getWidth(),20));
 		edgePanel.add(p1Box);
 		
 		p2Box = new JComboBox<String>(points);
-		p2Box.setMaximumSize(new Dimension(100,20));
+		p2Box.setMaximumSize(new Dimension(this.getWidth(),20));
 		edgePanel.add(p2Box);
 		
 		weightField = new JTextField();
 		weightField.setActionCommand("edge");
 		weightField.addActionListener(this);
-		weightField.setMaximumSize(new Dimension(100,20));
+		weightField.setMaximumSize(new Dimension(this.getWidth(),20));
 		edgePanel.add(weightField);
 		createSection.add(edgePanel);
 		
 		makeEdgeButton = new JButton("Make Edge");
 		makeEdgeButton.setActionCommand("edge");
 		makeEdgeButton.addActionListener(this);
-		makeEdgeButton.setAlignmentX(LEFT_ALIGNMENT);
+		makeEdgeButton.setAlignmentX(RIGHT_ALIGNMENT);
 		createSection.add(makeEdgeButton);
 		edgeLabel = new JLabel("Edges in Graph:");
 		createSection.add(edgeLabel);
@@ -144,44 +144,19 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 		
 		add(createSection);
 		
-		//section creates open graph section
-		JPanel openPane = new JPanel();
-		openPane.setBackground(new Color(227,207,87));
-		openPane.setLayout(new BoxLayout(openPane,BoxLayout.Y_AXIS));
-		openPane.setMaximumSize(new Dimension(460,100));
-		
-		selectedFileLabel = new JLabel("Selected graph file:");
-		selectedFileLabel.setAlignmentX(TOP_ALIGNMENT);
-		selectedFileLabel.setAlignmentY(RIGHT_ALIGNMENT);
-		openPane.add(selectedFileLabel);
-		
-		JPanel filePanel = new JPanel();
-		filePanel.setBackground(new Color(227,207,87));
-		filePanel.setLayout(new BoxLayout(filePanel,BoxLayout.X_AXIS));
-		
-		openFileField = new JTextField();
-		openFileField.setEditable(false);
-		openFileField.setMaximumSize(new Dimension(300,25));
-		filePanel.add(openFileField);
-		
-		openGraphButton = new JButton("Open Graph file");
-		openGraphButton.setActionCommand("open");
-		openGraphButton.addActionListener(this);
-		filePanel.add(openGraphButton);
-		
-		openPane.add(filePanel);
-		add(openPane);
-		
 		//creates pathPanel
 		Color pathColor = new Color (255,185,15);
 		JPanel pathPanel = new JPanel();
-		pathPanel.setMaximumSize(new Dimension(400,800));
+		pathPanel.setMaximumSize(new Dimension(this.getWidth(),700));
+		pathPanel.setPreferredSize(new Dimension(this.getWidth(),700));
 		pathPanel.setLayout(new BoxLayout(pathPanel,BoxLayout.Y_AXIS));
 		pathPanel.setBackground(pathColor);
 		
 		JPanel boxPanel = new JPanel();
 		boxPanel.setLayout(new BoxLayout(boxPanel,BoxLayout.X_AXIS));
 		boxPanel.setBackground(pathColor);
+		boxPanel.setMaximumSize(new Dimension(this.getWidth(),700));
+		pathPanel.setPreferredSize(new Dimension(this.getWidth(),700));
 		pathLabel = new JLabel("Shortest Paths From");
 		boxPanel.add(pathLabel);
 		pathBox = new JComboBox<String>(points);
@@ -194,11 +169,16 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 		pathList.setBackground(pathColor);
 		pathList.addMouseListener(this);
 		pathScroll.setViewportView(pathList);
+		pathScroll.setMaximumSize(new Dimension(this.getWidth(),700));
+		pathScroll.setPreferredSize(new Dimension(this.getWidth(),700));
 		pathPanel.add(pathScroll);
 		
 		JPanel executePanel = new JPanel();
+		executePanel.setMaximumSize(new Dimension(this.getWidth(),700));
+		executePanel.setPreferredSize(new Dimension(this.getWidth(),700));
 		executePanel.setBackground(pathColor);
 		executePanel.setLayout(new BoxLayout(executePanel,BoxLayout.X_AXIS));
+		executePanel.setMaximumSize(new Dimension(this.getWidth(), 200));
 		visualizeCheck = new Checkbox("Visualize");
 		executePanel.add(visualizeCheck);
 		pathButton = new JButton("Get Paths");
@@ -222,18 +202,12 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 		surface.setPaths(null);
 		edgesList.clearSelection();
 		pathButton.setEnabled(state);
-		saveGraphButton.setEnabled(state);
-	}
-	public void setOpenFileField(File dir)
-	{
-		openFileField.setText(dir.getPath().toString());
 	}
 	public void reset()
 	{
 		graph.clear();
 		clearAll();
 		updateBoxes();
-		openFileField.setText("");
 		surface.redraw();
 	}
 	public void clearAll()
@@ -250,6 +224,10 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 	{
 		p1Box.updateUI();
 		p2Box.updateUI();
+	}
+	public void enableDraw()
+	{
+		drawableButton.setEnabled(true);
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) 
@@ -285,13 +263,6 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 			catch(NumberFormatException nfe){}
 			weightField.setText("");
 		}//end edge case
-		else if(e.getActionCommand().equalsIgnoreCase("save"))
-		{
-		}//end save case
-		else if(e.getActionCommand().equalsIgnoreCase("open"))
-		{
-			
-		}//end open case
 		else if(e.getActionCommand().equalsIgnoreCase("path"))
 		{
 			surface.setPaths(null);
@@ -309,14 +280,10 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 			pathBox.updateUI();
 			if(visualizeCheck.getState())
 			{
-				//System.out.println(history);
-				//new VisualPath(history,pathMap).setVisible(true);
+				System.out.println(history.size());
+				new VisualDijkstras(history,pathMap,graph).setVisible(true);
 			}
 		}//end path case
-		else if(e.getActionCommand().equalsIgnoreCase("clear"))
-		{
-			reset();
-		}
 	}//end action Listener
 	@Override
 	public void mouseClicked(MouseEvent e) 

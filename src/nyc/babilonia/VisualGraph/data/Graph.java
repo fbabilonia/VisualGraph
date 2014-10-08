@@ -1,5 +1,6 @@
-package nyc.babilonia.VisualGraph;
+package nyc.babilonia.VisualGraph.data;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.File;
@@ -8,7 +9,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,9 +16,10 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 
+
 public abstract class Graph
 {
-	Set<Point> pointSet = new HashSet<Point>();//used to keep only 1 of each point
+	//Set<Point> pointSet = new HashSet<Point>();//used to keep only 1 of each point
 	Set<Edge>  edges = new TreeSet<Edge>();//used to keep set of edges and also pre-sort for computations.
 	ArrayList<Point> points = new ArrayList<Point> ();//used for easy access to points.
 	
@@ -50,7 +51,7 @@ public abstract class Graph
 				first = scanner.nextInt();
 				second = scanner.nextInt();
 				weight = scanner.nextInt();
-				addEdge(new Edge(points.get(first-1),points.get(second-1),weight)); 
+				addEdge(new Edge(points.get(first),points.get(second),weight)); 
 			}
 			scanner.close();
 		}
@@ -78,14 +79,21 @@ public abstract class Graph
 		pw.flush();
 		pw.close();
 	}
+	public boolean doOverLap(Point point1, Point point2)
+	{
+		int circumference = (int)((BasicStroke) point1.getStroke()).getLineWidth();
+		double distance = Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y -point2.y,2));
+		return circumference > distance ;
+	}
 	public boolean addPoint(Point point)
 	{
-		if(pointSet.add(point))
+		for(Point p :points)
 		{
-			points.add(point);
-			return true;
+			if(doOverLap(p, point))
+				return false;
 		}
-		return false;
+		points.add(point);
+		return true;
 	}
 	//adds edge to graph while keeping internals correct.
 	protected abstract boolean _addEdge(Edge edge);
@@ -97,7 +105,6 @@ public abstract class Graph
 	//clears internal data structures of graph
 	public void clear()
 	{
-		pointSet.clear();
 		edges.clear();
 		points.clear();
 	}
@@ -111,22 +118,22 @@ public abstract class Graph
 		DijkstraData data = new DijkstraData(points.get(source),points);
 		TreeNode head = new TreeNode(data) , current;
 		current = head;
-		int itt = 1; 
 		Point currentPoint;
+		if(history != null)
+			history.add(new TreeNode(head));
 		do
 		{
 			if(current.isValid)
 			{
 				currentPoint = current.point;
-				if(history != null)
-					history.add(new TreeNode(current));
+				data.open.remove(currentPoint);
 				data.closed.add(currentPoint);
 				for(Edge edge : current.point.edges)
 				{
 					Point otherPoint = edge.point2; //point2 is always where the edge is going to;
 					int newDistance = current.distanceFromSource + edge.getWeight();
 					boolean isChildValid =(data.distances[otherPoint.id] == -1 
-							|| (newDistance)< data.distances[otherPoint.id]);
+							|| newDistance < data.distances[otherPoint.id]);
 					TreeNode child = new TreeNode(current, otherPoint , isChildValid , edge , edge.getWeight());
 					current.children.add(child);
 					if(child.isValid)
@@ -135,15 +142,12 @@ public abstract class Graph
 						current.best.put(otherPoint.id, child);
 						data.distances[child.point.id] = child.distanceFromSource;
 					}
+					//head.update();
 				}
+				if(history != null)
+					history.add(new TreeNode(head));
 			}
-			System.out.println("Itteration # " +itt);
-			for(TreeNode candidate : current.candidates)
-			{
-				System.out.println(candidate.point.id + " " + candidate.distanceFromSource);
-			}
-			System.out.println();
-			itt++;
+
 			current = current.candidates.pollFirst();
 		}
 		while(data.open.size()>0 && current != null);
@@ -158,19 +162,11 @@ public abstract class Graph
 		}
 		return paths;
 	}
+	public abstract int prim(Set<Point> mstPoints, Set<Edge> mstEdges,
+			ArrayList<Set<Edge>> eh, ArrayList<Set<Point>> ph);
+	public abstract int kruskal(ArrayList<ArrayList<Set<Point>>> pstates,
+			ArrayList<Set<Edge>> estates, ArrayList<Point> gobble);
 	public abstract void draw(Graphics2D g2d);
 	public abstract void draw(Graphics2D g2d , Color pointColor , Color lineColor);
 	//will drop
-	public void saveState(ArrayList<ArrayList<Set<Point>>> pstates, ArrayList<Set<Point>> psets)
-	{}
-	public Set<Edge> edgesForPoint(Set<Edge> ed, Point p)
-	{
-		Set<Edge> edgeForPoint = new TreeSet<Edge>();
-		for (Edge e : ed)
-		{
-			if (e.point1.equals(p))
-				edgeForPoint.add(e);
-		}
-		return edgeForPoint;
-	}// end get edgesforPoint
 }
