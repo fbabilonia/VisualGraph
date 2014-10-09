@@ -17,10 +17,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 
-import nyc.babilonia.VisualGraph.data.Edge;
-import nyc.babilonia.VisualGraph.data.Path;
-import nyc.babilonia.VisualGraph.data.Point;
-import nyc.babilonia.VisualGraph.data.TreeNode;
+import nyc.babilonia.data.Edge;
+import nyc.babilonia.data.Path;
+import nyc.babilonia.data.Point;
+import nyc.babilonia.data.TreeNode;
 
 public abstract class Graphold
 {

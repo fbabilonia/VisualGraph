@@ -1,10 +1,15 @@
-package nyc.babilonia.VisualGraph.data;
+package nyc.babilonia.data;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-
+/**
+ * 
+ * @author Fernando Babilonia
+ * Data structure to hold a paths information.  Uses an internal Directed Graph as the path representation. 
+ *
+ */
 
 
 public class Path extends GraphComponent

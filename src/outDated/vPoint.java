@@ -7,7 +7,7 @@ import java.awt.Point;
 import java.awt.Stroke;
 import java.util.TreeSet;
 
-import nyc.babilonia.VisualGraph.data.Edge;
+import nyc.babilonia.data.Edge;
 
 
 //old point class used while in class before the breakdown

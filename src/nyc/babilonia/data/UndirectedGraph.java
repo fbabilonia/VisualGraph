@@ -1,4 +1,4 @@
-package nyc.babilonia.VisualGraph.data;
+package nyc.babilonia.data;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -97,8 +97,9 @@ public class UndirectedGraph extends Graph
 	@Override
 	protected boolean _addEdge(Edge e)
 	{
-		if(edges.add(e))
+		if(!e.point1.edges.contains(e) && !e.point2.edges.contains(e))
 		{
+			edges.add(e);
 			e.point1.addEdge(e);
 			e.point2.addEdge(new Edge(e.point2 , e.point1, e.getWeight()));
 			return true;

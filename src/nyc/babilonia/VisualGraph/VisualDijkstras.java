@@ -8,9 +8,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
-import nyc.babilonia.VisualGraph.data.GraphObject;
-import nyc.babilonia.VisualGraph.data.Path;
-import nyc.babilonia.VisualGraph.data.TreeNode;
+import nyc.babilonia.data.GraphObject;
+import nyc.babilonia.data.Path;
+import nyc.babilonia.data.TreeNode;
 
 
 public class VisualDijkstras extends JFrame

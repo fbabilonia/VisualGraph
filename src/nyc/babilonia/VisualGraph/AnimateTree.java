@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-import nyc.babilonia.VisualGraph.data.TreeNode;
+import nyc.babilonia.data.TreeNode;
 
 
 public class AnimateTree extends JPanel

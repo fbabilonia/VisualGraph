@@ -12,11 +12,11 @@ import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-import nyc.babilonia.VisualGraph.data.DijkstraData;
-import nyc.babilonia.VisualGraph.data.Edge;
-import nyc.babilonia.VisualGraph.data.GraphObject;
-import nyc.babilonia.VisualGraph.data.Path;
-import nyc.babilonia.VisualGraph.data.Point;
+import nyc.babilonia.data.DijkstraData;
+import nyc.babilonia.data.Edge;
+import nyc.babilonia.data.GraphObject;
+import nyc.babilonia.data.Path;
+import nyc.babilonia.data.Point;
 
 
 public class AnimateGraph extends JPanel

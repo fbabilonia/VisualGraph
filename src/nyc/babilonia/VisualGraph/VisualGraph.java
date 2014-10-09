@@ -20,7 +20,7 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import nyc.babilonia.VisualGraph.data.GraphObject;
+import nyc.babilonia.data.GraphObject;
 @SuppressWarnings("serial")
 public class VisualGraph extends JFrame
 {
@@ -150,7 +150,6 @@ public class VisualGraph extends JFrame
 			{
 				e.printStackTrace();
 			}
-			console.edgeList.addAll(graph.getEdges());
 			console.updatePoints();
 			console.updateEdge();
 			console.updateBoxes();

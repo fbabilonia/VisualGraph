@@ -18,10 +18,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-import nyc.babilonia.VisualGraph.data.GraphObject;
-import nyc.babilonia.VisualGraph.data.Path;
-import nyc.babilonia.VisualGraph.data.Point;
-import nyc.babilonia.VisualGraph.data.TreeNode;
+import nyc.babilonia.data.GraphObject;
+import nyc.babilonia.data.Path;
+import nyc.babilonia.data.Point;
+import nyc.babilonia.data.TreeNode;
 
 
 public class DijkstraInfo extends JPanel implements ActionListener , MouseListener

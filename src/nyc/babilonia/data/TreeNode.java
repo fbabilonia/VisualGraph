@@ -1,4 +1,4 @@
-package nyc.babilonia.VisualGraph.data;
+package nyc.babilonia.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +8,11 @@ import java.util.Vector;
 
 
 
-//classed used to facilitate Dijkstra's history and shortest path tree
+/**
+ * @author Fernando Babilonia
+ * classed used to facilitate Dijkstra's history and shortest path tree
+ *
+ */
 public class TreeNode implements Comparable<TreeNode>
 {
 	public DijkstraData data;
@@ -21,14 +25,14 @@ public class TreeNode implements Comparable<TreeNode>
 	public Vector<TreeNode> children = new Vector<TreeNode> ();
 	public TreeSet<TreeNode> candidates = new TreeSet<TreeNode>();
 	public int level;
-	public TreeNode (DijkstraData data)
+	public TreeNode (DijkstraData data ,Point p)
 	{
 		distanceFromSource = 0;
 		this.data = data;
-		point = data.point;
+		point = p;
 		level = 0;
 	}
-	public TreeNode(TreeNode parent ,Point point, boolean valid ,Edge between , int distanceFromParent)
+	public TreeNode(TreeNode parent, boolean valid ,Edge between)
 	{
 		best= parent.best;
 		data = parent.data;
@@ -36,9 +40,9 @@ public class TreeNode implements Comparable<TreeNode>
 		edgeBetweenParent = between;
 		isValid = valid;
 		this.parent = parent;
-		this.point = point;
+		this.point = between.point2;
 		level =  parent.level+1;
-		distanceFromSource = parent.distanceFromSource + distanceFromParent;
+		distanceFromSource = parent.distanceFromSource + between.getWeight();
 	}
 	public TreeNode(TreeNode other)
 	{
@@ -58,7 +62,7 @@ public class TreeNode implements Comparable<TreeNode>
 	private void updateRec()
 	{
 		if(parent != null)//guard against head;
-			isValid = parent.isValid && data.distances[data.point.id] == distanceFromSource; 
+			isValid = parent.isValid && data.distances[point.id] == distanceFromSource; 
 		for(TreeNode node : children)
 			node.updateRec();
 	}

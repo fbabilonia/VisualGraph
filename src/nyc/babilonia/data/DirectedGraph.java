@@ -1,4 +1,4 @@
-package nyc.babilonia.VisualGraph.data;
+package nyc.babilonia.data;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

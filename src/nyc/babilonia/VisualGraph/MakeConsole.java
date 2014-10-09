@@ -9,7 +9,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -23,11 +22,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import nyc.babilonia.VisualGraph.data.Edge;
-import nyc.babilonia.VisualGraph.data.GraphObject;
-import nyc.babilonia.VisualGraph.data.Path;
-import nyc.babilonia.VisualGraph.data.Point;
-import nyc.babilonia.VisualGraph.data.TreeNode;
+import nyc.babilonia.data.Edge;
+import nyc.babilonia.data.GraphObject;
+import nyc.babilonia.data.Path;
+import nyc.babilonia.data.Point;
+import nyc.babilonia.data.TreeNode;
 
 
 @SuppressWarnings("serial")
@@ -45,7 +44,6 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 	JComboBox<String> p1Box,p2Box,pathBox;
 	Vector<String> points = new Vector<String>(),edges = new Vector<String>(),paths = new Vector<String>();
 	ArrayList<Edge> edgeList = new ArrayList<Edge>();
-	TreeSet<Edge> edgeSet = new TreeSet <Edge>();
 	Map<String,Path> pathMap;
 	
 	public MakeConsole (GraphObject g, DrawSurface d , Dimension parent)
@@ -69,9 +67,11 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 	public void updateEdge()
 	{
 		edges.clear();
-		for(Edge e : edgeList)
+		edgeList.clear();
+		for(Edge e : graph.getEdges())
 		{
 			edges.add("From:p"+(e.point1.id+1)+" To:p" +(e.point2.id+1)+" Weight:"+e.getWeight());
+			edgeList.add(e);
 		}
 		edgesList.updateUI();
 		repaint();
@@ -215,7 +215,6 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 		points.clear();
 		edges.clear();
 		edgeList.clear();
-		edgeSet.clear();
 		paths.clear();
 		surface.setPaths(null);
 		surface.setSelected(null);
@@ -250,10 +249,8 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 					ArrayList<Point> ep = graph.getPoints();
 					Point p1=ep.get(p1Box.getSelectedIndex()), p2 = ep.get(p2Box.getSelectedIndex());
 					Edge newe =new Edge(p1, p2, weight);
-					if(edgeSet.add(newe))
+					if(graph.addEdge(newe))
 					{
-						edgeList.add(newe);
-						graph.addEdge(newe);
 						surface.redraw();
 						updateEdge();
 						edgesList.updateUI();
