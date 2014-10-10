@@ -54,6 +54,7 @@ public class TreeNode implements Comparable<TreeNode>
 		parent = other.parent;
 		candidates = new TreeSet<TreeNode>(other.candidates);
 		level = other.level;
+		this.isValid = other.isValid;
 		for(TreeNode tn : other.children)
 		{
 			children.add(new TreeNode(tn));
@@ -114,6 +115,6 @@ public class TreeNode implements Comparable<TreeNode>
 	@Override
 	public String toString()
 	{
-		return "P"+point.id+ " with distance from source of "+this.distanceFromSource;
+		return "P"+(point.id+1)+ " with distance from source of "+this.distanceFromSource;
 	}
 }

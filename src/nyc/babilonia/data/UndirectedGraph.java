@@ -11,6 +11,7 @@ import java.util.TreeSet;
 
 public class UndirectedGraph extends Graph
 {
+	@Override
 	public int kruskal(ArrayList<ArrayList<Set<Point>>> pstates,
 			ArrayList<Set<Edge>> estates, ArrayList<Point> gobble)
 	{
@@ -130,5 +131,34 @@ public class UndirectedGraph extends Graph
 		{
 			p.draw(g2d , pointColor);
 		}
+	}
+	@Override
+	public void deletePoint(Point point)
+	{
+		if(points.remove(point))
+		{
+			Edge toRemove;
+			for(Edge e : point.edges)
+			{
+				toRemove = null;
+				for(Edge e2 : e.point2.edges)
+				{
+					if(e2.point2.id == point.id)
+						toRemove = e2;
+				}
+				e.point2.edges.remove(toRemove);
+			}
+			ArrayList<Edge> toRemoveC = new ArrayList<Edge>();
+			for(Edge e : edges)
+			{
+				if(e.point1.id == point.id || e.point2.id == point.id)
+					toRemoveC.add(e);
+			}
+			edges.removeAll(toRemoveC);
+			for(int i = point.id ; i < points.size() ; ++i)
+			{
+				--points.get(i).id;
+			}
+		}	
 	}
 }

@@ -149,4 +149,9 @@ public class GraphObject
 	{
 		graph.draw(g2d, pointColor, lineColor);
 	}
+	/**@see Graph#deletePoint(Point) */
+	public void deletePoint(Point point)
+	{
+		graph.deletePoint(point);
+	}
 }

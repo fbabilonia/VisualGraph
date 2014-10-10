@@ -5,10 +5,15 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 import nyc.babilonia.data.Edge;
 import nyc.babilonia.data.GraphObject;
@@ -17,10 +22,11 @@ import nyc.babilonia.data.Point;
 
 
 @SuppressWarnings("serial")
-public class DrawSurface extends JPanel implements MouseListener
+public class DrawSurface extends JPanel implements MouseListener ,MouseMotionListener
 {
 	public GraphObject graph;
 	private ChangeTracker changeTracker = ChangeTracker.getTracker();
+	Point draggedPoint;
 	private boolean drawable = false,tranformable = false;
 	Edge selected = null;
 	Path path = null;
@@ -29,8 +35,18 @@ public class DrawSurface extends JPanel implements MouseListener
 		Dimension startDim = new Dimension((int)(parent.width*.75) , parent.height);
 		this.setPreferredSize(startDim);
 		this.addMouseListener(this);
+		this.addMouseMotionListener(this);
 		this.graph = g;
 		this.setBackground(Color.WHITE);
+		this.changeTracker.addActionListener( new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				redraw();
+			}
+			
+		});
 	}
 	public void toggleTranform()
 	{
@@ -69,6 +85,17 @@ public class DrawSurface extends JPanel implements MouseListener
 			path.draw(g2d);
 		}
 	}//end draw
+	
+	//find closest point to given point.  If no points are close null is returned.
+	private Point getClosestPoint(Point point)
+	{
+		for(Point p : graph.getPoints())
+		{
+			if(p.doOverLap(point))
+				return p;
+		}
+		return null;
+	}
     public void paintComponent(Graphics g) 
 	{    
         super.paintComponent(g);
@@ -89,21 +116,84 @@ public class DrawSurface extends JPanel implements MouseListener
 	@Override
 	public void mousePressed(MouseEvent e) 
 	{
+		Point mousePoint = new Point(0,e.getX(),e.getY());
+		draggedPoint = getClosestPoint(mousePoint);
+	}
+	@Override
+	public void mouseReleased(MouseEvent e) 
+	{
+		if(e.isPopupTrigger())
+		{
+			Point mousePoint = new Point(0,e.getX(),e.getY());
+			System.out.println("RIGHT CLICK");
+			Point menuPoint = getClosestPoint(mousePoint);
+			if(menuPoint != null)
+			{
+				GraphMenu menu = new GraphMenu(menuPoint);
+				menu.show(this, mousePoint.x, mousePoint.y);
+			}
+		}
+		else
 		if(drawable)
 		{
+			graph.addPoint(new Point(graph.getPoints().size(),e.getX(),e.getY()));
 			changeTracker.changeMade();
-			graph.addPoint(new Point(graph.getPoints().size(),e.getX(),e.getY()));redraw();
 		}
-		if(tranformable)
+		else
 		{
-			for (Point p :graph.getPoints())
+			boolean doesCollide;
+			do
 			{
-				p.x+= (350-e.getX());
-				p.y+= (500-e.getY());
+				doesCollide = false;
+				for(Point p : graph.getPoints())
+				{
+					if(p!= draggedPoint && draggedPoint.doOverLap(p))
+					{
+						doesCollide = true;
+						draggedPoint.x+=5;
+						draggedPoint.y+=5;
+					}
+				}
 			}
+			while(doesCollide);
+			changeTracker.changeMade();
+			draggedPoint = null;
 		}
 	}
 	@Override
-	public void mouseReleased(MouseEvent e) {}
+	public void mouseDragged(MouseEvent e)
+	{
+		if(draggedPoint != null)
+		{
+			draggedPoint.x = e.getX();
+			draggedPoint.y = e.getY();
+			changeTracker.changeMade();
+		}
+	}
+	@Override
+	public void mouseMoved(MouseEvent e)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+	private class GraphMenu extends JPopupMenu
+	{
+		JMenuItem deleteJMenuItem;
+		public GraphMenu(final Point point)
+		{
+			deleteJMenuItem = new JMenuItem("Delete Point");
+			deleteJMenuItem.addActionListener(new ActionListener()
+			{
 
+				@Override
+				public void actionPerformed(ActionEvent arg0)
+				{
+					graph.deletePoint(point);
+					changeTracker.changeMade();
+				}
+				
+			});
+			add(deleteJMenuItem);
+		}
+	}
 }

@@ -183,13 +183,15 @@ public class DijkstraInfo extends JPanel implements ActionListener , MouseListen
 	@Override
 	public void mouseExited(MouseEvent arg0) {}
 	@Override
-	public void mousePressed(MouseEvent arg0) {}
+	public void mousePressed(MouseEvent e) 
+	{}
 	@Override
 	public void mouseReleased(MouseEvent e) 
 	{
-		aGraph.selected=pathMap.get(pathList.getSelectedValue());
-		aTree.selected = states.get(0).best.get(pathMap.get(pathList.getSelectedValue()).to.id);
-		aGraph.redraw();
-		aTree.redraw();
+			aGraph.selected=pathMap.get(pathList.getSelectedValue());
+			aTree.selected = states.get(0).best.get(pathMap.get(pathList.getSelectedValue()).to.id);
+			aGraph.redraw();
+			aTree.redraw();
 	}
+
 }

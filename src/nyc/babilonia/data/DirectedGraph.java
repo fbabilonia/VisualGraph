@@ -75,5 +75,22 @@ public class DirectedGraph extends Graph
 		}
 		return 0;
 	}
-
+	@Override
+	public void deletePoint(Point point)
+	{
+		if(points.remove(point))
+		{
+			ArrayList<Edge> toRemove = new ArrayList<Edge>();
+			for(Edge e : edges)
+			{
+				if(e.point1.id == point.id || e.point2.id == point.id)
+					toRemove.add(e);
+			}
+			edges.removeAll(toRemove);
+			for(int i = point.id ; i < points.size() ; ++i)
+			{
+				--points.get(i).id;
+			}
+		}	
+	}
 }

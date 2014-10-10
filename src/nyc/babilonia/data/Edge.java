@@ -25,8 +25,6 @@ public class Edge extends GraphComponent implements Comparable<Edge>
 		weight=w;
 		color = Color.BLUE;
 		stroke = new BasicStroke(2);
-		calculateDrawPoints();
-		calculateTextPoint();
 	}
 	/**
 	 * Returns the weight of the Edge
@@ -120,6 +118,8 @@ public class Edge extends GraphComponent implements Comparable<Edge>
 	//draws the Edge with given color.
 	protected void _draw(Graphics2D g2d, Color drawColor)
 	{
+		calculateDrawPoints();
+		calculateTextPoint();
 		Stroke oldStroke = g2d.getStroke();
 		Color oldColor = g2d.getColor();
 		g2d.setStroke(stroke);

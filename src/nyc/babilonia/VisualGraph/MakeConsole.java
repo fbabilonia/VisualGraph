@@ -50,14 +50,15 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 	{
 		graph=g;
 		surface = d;
+		this.changeTracker.addActionListener(this);
 		Dimension startDim = new Dimension((int)(parent.width*.25) , parent.height);
 		this.setSize(startDim);
 		this.setMaximumSize(startDim);
-		this.setAlignmentX(RIGHT_ALIGNMENT);
 		initGUI();
 	}
 	public void updatePoints()
 	{
+		points.clear();
 		for(int i=points.size();i<graph.getPoints().size();++i)
 		{
 			points.add("p"+(i+1));
@@ -73,6 +74,8 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 			edges.add("From:p"+(e.point1.id+1)+" To:p" +(e.point2.id+1)+" Weight:"+e.getWeight());
 			edgeList.add(e);
 		}
+		System.out.println(edgeList.size() == graph.getEdges().size());
+		System.out.println(edges);
 		edgesList.updateUI();
 		repaint();
 	}
@@ -251,7 +254,7 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 					Edge newe =new Edge(p1, p2, weight);
 					if(graph.addEdge(newe))
 					{
-						surface.redraw();
+						changeTracker.changeMade();
 						updateEdge();
 						edgesList.updateUI();
 					}
@@ -281,6 +284,13 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 				new VisualDijkstras(history,pathMap,graph).setVisible(true);
 			}
 		}//end path case
+		else if(e.getActionCommand().equalsIgnoreCase("change"))
+		{
+			surface.selected = null;
+			updatePoints();
+			updateEdge();
+			updateBoxes();
+		}
 	}//end action Listener
 	@Override
 	public void mouseClicked(MouseEvent e) 
@@ -296,7 +306,6 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 					graph.updateEdge(toUpdate, newWeight);
 					updateEdge();
 					changeTracker.changeMade();
-					surface.redraw();
 				}
 				catch(NumberFormatException nfe){}
 			}
@@ -312,8 +321,6 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 				{
 					surface.setSelected(null);
 					Path p = pathMap.get(pathList.getSelectedValue());
-					System.out.println(p);
-					System.out.println(p.path.getEdges());
 					surface.setPaths(p);
 					surface.redraw();	
 				}

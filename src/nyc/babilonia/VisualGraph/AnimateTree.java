@@ -30,7 +30,12 @@ public class AnimateTree extends JPanel
 		//this.setMaximumSize(new Dimension(750,1000));
 		//this.setBackground(Color.WHITE);
 	}
-	public void setState(ArrayList<ArrayList<TreeNode>> nTree){tree=nTree;redraw();}
+	public void setState(ArrayList<ArrayList<TreeNode>> nTree)
+	{
+		tree=nTree;
+		redraw();
+		System.out.println(nTree.get(0).get(0).parent);
+	}
 	public boolean drawTree(Graphics2D g2d, int leftx,int rightx,int numOfCP,int myNum,TreeNode node)
 	{
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
@@ -39,8 +44,10 @@ public class AnimateTree extends JPanel
 		if(node.parent == null)g2d.setColor(Color.YELLOW);
 		else if(node.isValid)
 		{
-			if(!node.data.closed.contains(node.point))g2d.setColor(Color.GREEN);
-			else g2d.setColor(Color.PINK);
+			if(node.data.closed.contains(node.point))
+				g2d.setColor(Color.GREEN);
+			else 
+				g2d.setColor(Color.PINK);
 		}
 		else g2d.setColor(Color.RED);
 		g2d.setStroke(pointStroke);

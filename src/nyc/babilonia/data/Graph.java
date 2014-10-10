@@ -106,13 +106,6 @@ public abstract class Graph
 		pw.flush();
 		pw.close();
 	}
-	/**
-	 * Adds point to graph only if the new point will not overlap with another point currently in the Graph.
-	 * Run time O(V).
-	 * <br>
-	 * @param point - Potential point to be added to the graph.
-	 * @return Returns true if point was added to the graph, false otherwise.
-	 */
 	public boolean addPoint(Point point)
 	{
 		for(Point p :points)
@@ -187,23 +180,27 @@ public abstract class Graph
 				data.open.remove(currentPoint); //remove current point from the openList
 				for(Edge edge : current.point.edges)//Iterate through edges for the list.
 				{
+				
 					Point otherPoint = edge.point2; //point2 is always where the edge is going to;
-					int newDistance = current.distanceFromSource + edge.getWeight(); //calculate new distance for child
-					boolean isChildValid =(data.distances[otherPoint.id] == -1 
-							|| newDistance < data.distances[otherPoint.id]); //check if child is valid.
-					TreeNode child = new TreeNode(current , isChildValid , edge); // create new child for treeNode
-					current.children.add(child); //add child to children
-					//if the child is valid then it has to be added to the candidates of TreeNodes to be expanded.
-					//it must also mean that a better distance has been found so the best paths should be updated
-					//and the distances array has to be updated.
-					if(child.isValid)
+					if(!data.closed.contains(otherPoint)) //only expand open nodes.
 					{
-						current.candidates.add(child);
-						current.best.put(otherPoint.id, child);
-						data.distances[child.point.id] = child.distanceFromSource;
+						int newDistance = current.distanceFromSource + edge.getWeight(); //calculate new distance for child
+						boolean isChildValid =(data.distances[otherPoint.id] == -1 
+								|| newDistance < data.distances[otherPoint.id]); //check if child is valid.
+						TreeNode child = new TreeNode(current , isChildValid , edge); // create new child for treeNode
+						current.children.add(child); //add child to children
+						//if the child is valid then it has to be added to the candidates of TreeNodes to be expanded.
+						//it must also mean that a better distance has been found so the best paths should be updated
+						//and the distances array has to be updated.
+						if(child.isValid)
+						{
+							current.candidates.add(child);
+							current.best.put(otherPoint.id, child);
+							data.distances[child.point.id] = child.distanceFromSource;
+						}
+						head.update();
+						data.closed.add(currentPoint); //add Current point to the closed set
 					}
-					head.update();
-					data.closed.add(currentPoint); //add Current point to the closed set
 				}
 				//If history is being tracked, add the current state to the history ArrayList
 				if(history != null)
@@ -259,4 +256,10 @@ public abstract class Graph
 	 * @param lineColor - the color to draw all lines (Edges) with.
 	 */
 	public abstract void draw(Graphics2D g2d , Color pointColor , Color lineColor);
+	/**
+	 * Deletes a point from a graph, also updates edges in the graph while keeping internal structure.
+	 * If point is not part of the graph nothing is done.
+	 * @param point
+	 */
+	public abstract void deletePoint(Point point);
 }
