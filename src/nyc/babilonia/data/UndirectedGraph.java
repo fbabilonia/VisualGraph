@@ -40,7 +40,6 @@ public class UndirectedGraph extends Graph
 			if (!(pset.get(a).contains(tmp.point1) && pset.get(a).contains(tmp.point2)))
 			{
 				total += tmp.getWeight();
-				System.out.println(total);
 				for (int index = 0; index < pset.size(); ++index)
 				{
 					if ((pset.get(index).contains(tmp.point1) || pset.get(index)

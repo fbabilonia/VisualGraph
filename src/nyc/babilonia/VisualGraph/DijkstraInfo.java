@@ -112,7 +112,6 @@ public class DijkstraInfo extends JPanel implements ActionListener , MouseListen
 		candidateScroll.setViewportView(candidateList);
 		candidatePanel.add(candidateScroll);
 		add(candidatePanel);
-		System.out.println(pathMap);
 		for(String s : pathMap.keySet()){paths.add(s);}
 		pathList = new JList<String>(paths);
 		pathList.setEnabled(false);

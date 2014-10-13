@@ -199,14 +199,13 @@ public abstract class Graph
 							data.distances[child.point.id] = child.distanceFromSource;
 						}
 						head.update();
-						data.closed.add(currentPoint); //add Current point to the closed set
 					}
 				}
-				//If history is being tracked, add the current state to the history ArrayList
-				if(history != null)
-					history.add(new TreeNode(head));
 			}
-
+			data.closed.add(current.point); //add Current point to the closed set
+			//If history is being tracked, add the current state to the history ArrayList
+			if(history != null)
+				history.add(new TreeNode(head));
 			current = current.candidates.pollFirst();//Get the next best TreeNode 
 		}
 		//do above loop until either there are no more points in the open Set 
@@ -220,7 +219,6 @@ public abstract class Graph
 			Map.Entry<Integer, TreeNode> pairs = (Entry<Integer, TreeNode>) it
 					.next();
 			Path p = pairs.getValue().getPath(points.get(source));
-			System.out.println(p);
 			paths.put(p.toString(), p);
 		}
 		return paths;

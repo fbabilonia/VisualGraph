@@ -125,7 +125,6 @@ public class DrawSurface extends JPanel implements MouseListener ,MouseMotionLis
 		if(e.isPopupTrigger())
 		{
 			Point mousePoint = new Point(0,e.getX(),e.getY());
-			System.out.println("RIGHT CLICK");
 			Point menuPoint = getClosestPoint(mousePoint);
 			if(menuPoint != null)
 			{

@@ -40,10 +40,6 @@ public class AnimateGraph extends JPanel
 	public void setState(DijkstraData d)
 	{
 		this.data = d;
-		for(int dis : data.distances)
-		{
-			System.out.println(dis);
-		}
 		this.redraw();
 	}
 	private void draw(Graphics g)
@@ -61,7 +57,6 @@ public class AnimateGraph extends JPanel
 				else if(data.open.contains(p))
 				{
 					pointColor = Color.GRAY;
-					System.out.println("Still in open");
 				}
 				else 
 					pointColor = Color.GREEN;

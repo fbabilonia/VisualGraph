@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -20,6 +22,7 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import nyc.babilonia.data.Graph;
 import nyc.babilonia.data.GraphObject;
 @SuppressWarnings("serial")
 public class VisualGraph extends JFrame
@@ -60,7 +63,41 @@ public class VisualGraph extends JFrame
         add(console);
         setSize(size);
         createMenu();
-        setLocationRelativeTo(null);        
+        setLocationRelativeTo(null);
+        this.addWindowListener(new WindowListener()
+        {
+
+			@Override
+			public void windowActivated(WindowEvent arg0)
+			{}
+
+			@Override
+			public void windowClosed(WindowEvent arg0)
+			{}
+
+			@Override
+			public void windowClosing(WindowEvent arg0)
+			{
+				closeFrame();
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent arg0)
+			{}
+
+			@Override
+			public void windowDeiconified(WindowEvent arg0)
+			{}
+
+			@Override
+			public void windowIconified(WindowEvent arg0)
+			{}
+
+			@Override
+			public void windowOpened(WindowEvent arg0)
+			{}
+        	
+        });
     }
 	public void createMenu()
 	{
@@ -110,17 +147,11 @@ public class VisualGraph extends JFrame
 
 			@Override
 			public void menuCanceled(MenuEvent arg0)
-			{
-				// TODO Auto-generated method stub
-				
-			}
+			{}
 
 			@Override
 			public void menuDeselected(MenuEvent arg0)
-			{
-				// TODO Auto-generated method stub
-				
-			}
+			{}
 
 			@Override
 			public void menuSelected(MenuEvent arg0)
@@ -179,7 +210,6 @@ public class VisualGraph extends JFrame
 		if(choose.showSaveDialog(this)==JFileChooser.APPROVE_OPTION)
 		{
 			dir = choose.getSelectedFile();
-			System.out.println(choose.getFileFilter().getDescription());
 			choose.setFileFilter(openFilter);
 			try
 			{
@@ -222,7 +252,6 @@ public class VisualGraph extends JFrame
 	        {
 	            @Override
 	            public void run() {
-	            	//System.out.println('∞');
 	                VisualGraph polygons = new VisualGraph();
 	                polygons.setVisible(true);
 	            }

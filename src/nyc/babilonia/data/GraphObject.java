@@ -120,7 +120,6 @@ public class GraphObject
 	public void openGraphFromFile(File graphFile) throws IOException
 	{
 		String file = graphFile.toString();
-		System.out.println(file);
 		int type;
 		if(file.toString().endsWith("undirected"))
 			type = UNDIRECTED;

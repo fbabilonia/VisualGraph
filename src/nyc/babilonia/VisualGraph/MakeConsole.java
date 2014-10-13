@@ -74,8 +74,6 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 			edges.add("From:p"+(e.point1.id+1)+" To:p" +(e.point2.id+1)+" Weight:"+e.getWeight());
 			edgeList.add(e);
 		}
-		System.out.println(edgeList.size() == graph.getEdges().size());
-		System.out.println(edges);
 		edgesList.updateUI();
 		repaint();
 	}
@@ -273,14 +271,12 @@ public class MakeConsole extends JPanel implements ActionListener,MouseListener
 			paths.clear();
 			for(Path p :pathMap.values())
 			{
-				System.out.println(p);
 				paths.add(p.toString());
 			}
 			pathList.updateUI();
 			pathBox.updateUI();
 			if(visualizeCheck.getState())
 			{
-				System.out.println(history.size());
 				new VisualDijkstras(history,pathMap,graph).setVisible(true);
 			}
 		}//end path case

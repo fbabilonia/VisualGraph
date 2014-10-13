@@ -34,7 +34,6 @@ public class AnimateTree extends JPanel
 	{
 		tree=nTree;
 		redraw();
-		System.out.println(nTree.get(0).get(0).parent);
 	}
 	public boolean drawTree(Graphics2D g2d, int leftx,int rightx,int numOfCP,int myNum,TreeNode node)
 	{

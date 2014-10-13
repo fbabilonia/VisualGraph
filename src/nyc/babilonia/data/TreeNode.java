@@ -57,7 +57,15 @@ public class TreeNode implements Comparable<TreeNode>
 		this.isValid = other.isValid;
 		for(TreeNode tn : other.children)
 		{
-			children.add(new TreeNode(tn));
+			copyChildren(tn);
+		}
+	}
+	private void copyChildren(TreeNode child)
+	{
+		children.add(new TreeNode(this,child.isValid,child.edgeBetweenParent));
+		for(TreeNode cn : child.children)
+		{
+			children.lastElement().copyChildren(cn);
 		}
 	}
 	private void updateRec()
@@ -86,7 +94,6 @@ public class TreeNode implements Comparable<TreeNode>
 			route=par.edgeBetweenParent;
 			par=par.parent;
 		}
-		System.out.println("Edges in path ="+p.path.getEdges().size());
 		return p;
 	}
 	private void getStructureRec(ArrayList<ArrayList<TreeNode>> structure)
